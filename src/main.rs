@@ -20,15 +20,17 @@ fn init() -> Result<Terminal<RawBackend>, io::Error> {
 fn draw(t: &mut Terminal<RawBackend>) -> Result<(), io::Error> {
     let size = t.size()?;
 
+    t.clear()?;
+
     Group::default()
         .direction(Direction::Vertical)
         .margin(1)
-        .sizes(&[Size::Percent(20), Size::Percent(70), Size::Percent(10)])
+        .sizes(&[Size::Percent(15), Size::Percent(70), Size::Percent(10)])
         .render(t, &size, |t, chunks| {
-            //Block::default()
-                //.title("Block 0")
-                //.borders(Borders::ALL)
-                //.render(t, &chunks[0]);
+            Block::default()
+                .title("Block 0")
+                .borders(Borders::ALL)
+                .render(t, &chunks[0]);
             Group::default()
                 .direction(Direction::Horizontal)
                 .margin(1)
