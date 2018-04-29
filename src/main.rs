@@ -11,8 +11,9 @@ use termion::input::TermRead;
 
 use tui::Terminal;
 use tui::backend::RawBackend;
-use tui::widgets::{Block, Borders, Widget};
+use tui::widgets::{Axis, Block, Borders, Chart, Dataset, Marker, Widget};
 use tui::layout::{Direction, Group, Size};
+use tui::style::{Color, Modifier, Style};
 
 fn main() {
     let mut terminal = init().expect("Failed initialization.");
@@ -81,9 +82,33 @@ fn draw(t: &mut Terminal<RawBackend>) -> Result<(), io::Error> {
         .margin(1)
         .sizes(&[Size::Percent(33), Size::Percent(67)])
         .render(t, &size, |t, chunks| {
-            Block::default()
-                .title("Graph")
-                .borders(Borders::ALL)
+            let datapts: Vec<_> = (1..100)
+                .map(|x| x as f64)
+                .map(|x| (x, (x * 3.14159 / 20.0).sin()))
+                .collect();
+
+            Chart::default()
+                .block(
+                    Block::default()
+                        .title("Graph")
+                        .title_style(Style::default().fg(Color::Cyan).modifier(Modifier::Bold))
+                        .borders(Borders::ALL),
+                )
+                .x_axis(
+                    Axis::default()
+                        .bounds([0.0, 100.0])
+                        .labels(&["0", "25", "50", "75", "100"]),
+                )
+                .y_axis(
+                    Axis::default()
+                        .bounds([-2.0, 2.0])
+                        .labels(&["-2", "0", "2"]),
+                )
+                .datasets(&[
+                    Dataset::default()
+                        .data(datapts.as_ref())
+                        .marker(Marker::Braille),
+                ])
                 .render(t, &chunks[0]);
             Group::default()
                 .direction(Direction::Horizontal)
