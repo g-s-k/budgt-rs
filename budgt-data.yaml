@@ -1,0 +1,67 @@
+# This is a test/example dataset for budgt to parse. It includes metadata for
+# a list of accounts and a list of associated transactions.
+
+############
+# ACCOUNTS #
+############
+
+accts :
+
+# first account - all properties default except for balance
+- name : &acct1 "bank account"
+  balance : 100
+
+# second account - balance is negative WRT net worth and has pending holds
+- name : &acct2 "credit card"
+  balance : 75
+  holds : 20
+  negative : true
+
+# third account - has interest
+- name : &acct3 "debt to loan shark"
+  balance : 200
+  rate : 3
+  negative : true
+
+################
+# TRANSACTIONS #
+################
+
+trscts :
+
+# first transaction - this is what income looks like
+- name : "paycheck"
+  amount : 50
+  frequency : "weekly"
+  time : "friday"
+  dest : *acct1 # This can be a reference or a literal. As long as the
+                # source/dest field matches an account name, it's all good.
+
+# second transaction - this is what spending money looks like
+- name : "rent"
+  amount : 60
+  frequency : "monthly"
+  time : 1
+  source : *acct1
+
+# third transaction - repeating multiple times in a frequency category works
+- name : "pay credit card"
+  amount : 50
+  frequency : "monthly"
+  time : [14, 28]
+  source : *acct1
+  dest : *acct2
+
+# fourth and fifth transactions - just to make the program do something
+- name : "buy food"
+  amount : 10
+  frequency : "weekly"
+  time : "saturday"
+  source : *acct2
+
+- name : "pay loan shark"
+  amount : 10
+  frequency : "monthly"
+  time : 28
+  source : *acct1
+  dest : *acct3
