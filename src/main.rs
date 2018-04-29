@@ -1,6 +1,13 @@
 extern crate tui;
+extern crate termion;
 
 use std::io;
+
+use std::thread;
+use std::sync::mpsc;
+
+use termion::event;
+use termion::input::TermRead;
 
 use tui::Terminal;
 use tui::backend::RawBackend;
@@ -9,6 +16,23 @@ use tui::layout::{Direction, Group, Size};
 
 fn main() {
     let mut terminal = init().expect("Failed initialization.");
+
+    // listener for keys
+    let (tx, rx) = mpsc::channel();
+    let input_tx = tx.clone();
+
+    thread::spawn(move || {
+        let stdin = io::stdin();
+        
+        for ch in stdin.keys() {
+            match ch.unwrap() {
+                event::Key::Char('q') => {
+                    input_tx.send("quit").unwrap();
+                }
+                _ => {}
+            }
+        }
+    });
 
     // get ready to run
     terminal
@@ -19,7 +43,18 @@ fn main() {
         .hide_cursor()
         .expect("Failed to hide the cursor.");
 
-    draw(&mut terminal).expect("Failed to draw.");
+    // actually run the thing
+    loop {
+        draw(&mut terminal).expect("Failed to draw.");
+
+        let evt = rx.recv().unwrap();
+        match evt {
+            "quit" => {
+                break
+            }
+            _ => {}
+        }
+    }
 
     // clean up at the end
     terminal
