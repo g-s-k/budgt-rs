@@ -107,7 +107,8 @@ fn draw(t: &mut Terminal<RawBackend>) -> Result<(), io::Error> {
                 .datasets(&[
                     Dataset::default()
                         .data(datapts.as_ref())
-                        .marker(Marker::Braille),
+                        .marker(Marker::Braille)
+                        .style(Style::default().fg(Color::Yellow)),
                 ])
                 .render(t, &chunks[0]);
             Group::default()
