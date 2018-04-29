@@ -4,13 +4,15 @@ use std::io;
 
 use tui::Terminal;
 use tui::backend::RawBackend;
-use tui::widgets::{Widget, Block, Borders};
-use tui::layout::{Group, Size, Direction};
+use tui::widgets::{Block, Borders, Widget};
+use tui::layout::{Direction, Group, Size};
 
 fn main() {
     let mut terminal = init().expect("Failed initialization.");
-    
-    terminal.clear().expect("Failed to clear the terminal window.");
+
+    terminal
+        .clear()
+        .expect("Failed to clear the terminal window.");
 
     draw(&mut terminal).expect("Failed to draw");
 }
