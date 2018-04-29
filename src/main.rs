@@ -16,6 +16,7 @@ use tui::layout::{Direction, Group, Size};
 
 fn main() {
     let mut terminal = init().expect("Failed initialization.");
+    chk_term_size(&terminal);
 
     // listener for keys
     let (tx, rx) = mpsc::channel();
@@ -63,6 +64,13 @@ fn main() {
 fn init() -> Result<Terminal<RawBackend>, io::Error> {
     let backend = RawBackend::new().unwrap();
     Terminal::new(backend)
+}
+
+fn chk_term_size(t: &Terminal<RawBackend>) {
+    let size = t.size().unwrap();
+    if size.width < 80 || size.height < 24 {
+        panic!("Terminal must be at least 80 x 24.");
+    }
 }
 
 fn draw(t: &mut Terminal<RawBackend>) -> Result<(), io::Error> {
