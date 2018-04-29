@@ -9,6 +9,9 @@ use tui::layout::{Group, Size, Direction};
 
 fn main() {
     let mut terminal = init().expect("Failed initialization.");
+    
+    terminal.clear().expect("Failed to clear the terminal window.");
+
     draw(&mut terminal).expect("Failed to draw");
 }
 
@@ -19,8 +22,6 @@ fn init() -> Result<Terminal<RawBackend>, io::Error> {
 
 fn draw(t: &mut Terminal<RawBackend>) -> Result<(), io::Error> {
     let size = t.size()?;
-
-    t.clear()?;
 
     Group::default()
         .direction(Direction::Vertical)
