@@ -11,7 +11,7 @@ use termion::input::TermRead;
 
 use tui::Terminal;
 use tui::backend::RawBackend;
-use tui::widgets::{Axis, Block, Borders, Chart, Dataset, Marker, Widget};
+use tui::widgets::{Axis, Block, Borders, Chart, Dataset, Marker, Widget, Table, Row};
 use tui::layout::{Direction, Group, Size};
 use tui::style::{Color, Modifier, Style};
 
@@ -90,9 +90,8 @@ fn draw(t: &mut Terminal<RawBackend>) -> Result<(), io::Error> {
             Chart::default()
                 .block(
                     Block::default()
-                        .title("Graph")
+                        .title("Projected Balances")
                         .title_style(Style::default().fg(Color::Cyan).modifier(Modifier::Bold))
-                        .borders(Borders::ALL),
                 )
                 .x_axis(
                     Axis::default()
@@ -116,9 +115,22 @@ fn draw(t: &mut Terminal<RawBackend>) -> Result<(), io::Error> {
                 .margin(1)
                 .sizes(&[Size::Percent(62), Size::Percent(38)])
                 .render(t, &chunks[1], |t, chunks2| {
-                    Block::default()
-                        .title("Transaction Record")
-                        .borders(Borders::ALL)
+                    Table::new(
+                        ["Name", "Amount", "Source", "Destination"].into_iter(),
+                        vec![
+                            Row::Data(["foo", "123.45", "bar", "baz"].into_iter()),
+                            Row::Data(["blat", " 23.99", "scram", ""].into_iter()),
+                            Row::Data(["fizz", " 15.00", "", "buzz"].into_iter()),
+                        ].into_iter()
+                        )
+                        .block(
+                        Block::default()
+                            .title("Transaction Record")
+                            .borders(Borders::ALL)
+                        )
+                        .header_style(Style::default().modifier(Modifier::Bold))
+                        .widths(&[10, 10, 10, 10])
+                        .column_spacing(1)
                         .render(t, &chunks2[0]);
                     Block::default()
                         .title("Balances")
