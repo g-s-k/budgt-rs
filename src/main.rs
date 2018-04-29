@@ -1,5 +1,5 @@
-extern crate tui;
 extern crate termion;
+extern crate tui;
 
 use std::io;
 
@@ -23,7 +23,7 @@ fn main() {
 
     thread::spawn(move || {
         let stdin = io::stdin();
-        
+
         for ch in stdin.keys() {
             match ch.unwrap() {
                 event::Key::Char('q') => {
@@ -39,9 +39,7 @@ fn main() {
         .clear()
         .expect("Failed to clear the terminal window.");
 
-    terminal
-        .hide_cursor()
-        .expect("Failed to hide the cursor.");
+    terminal.hide_cursor().expect("Failed to hide the cursor.");
 
     // actually run the thing
     loop {
@@ -49,17 +47,13 @@ fn main() {
 
         let evt = rx.recv().unwrap();
         match evt {
-            "quit" => {
-                break
-            }
+            "quit" => break,
             _ => {}
         }
     }
 
     // clean up at the end
-    terminal
-        .show_cursor()
-        .expect("Failed to show the cursor.");
+    terminal.show_cursor().expect("Failed to show the cursor.");
 
     terminal
         .clear()
