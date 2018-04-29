@@ -11,7 +11,7 @@ use termion::input::TermRead;
 
 use tui::Terminal;
 use tui::backend::RawBackend;
-use tui::widgets::{Axis, Block, Borders, Chart, Dataset, Marker, Widget, Table, Row};
+use tui::widgets::{Axis, Block, Borders, Chart, Dataset, Marker, Widget, Table, Row, Tabs};
 use tui::layout::{Direction, Group, Size};
 use tui::style::{Color, Modifier, Style};
 
@@ -80,7 +80,7 @@ fn draw(t: &mut Terminal<RawBackend>) -> Result<(), io::Error> {
     Group::default()
         .direction(Direction::Vertical)
         .margin(1)
-        .sizes(&[Size::Percent(33), Size::Percent(67)])
+        .sizes(&[Size::Percent(33), Size::Fixed(3), Size::Min(0)])
         .render(t, &size, |t, chunks| {
             let datapts: Vec<_> = (1..100)
                 .map(|x| x as f64)
@@ -110,11 +110,17 @@ fn draw(t: &mut Terminal<RawBackend>) -> Result<(), io::Error> {
                         .style(Style::default().fg(Color::Yellow)),
                 ])
                 .render(t, &chunks[0]);
+            Tabs::default()
+                .block(Block::default().borders(Borders::ALL))
+                .titles(&["Transactions", "Ending Balances"])
+                .highlight_style(Style::default().fg(Color::Cyan))
+                .select(0)
+                .render(t, &chunks[1]);
             Group::default()
                 .direction(Direction::Horizontal)
                 .margin(1)
-                .sizes(&[Size::Percent(62), Size::Percent(38)])
-                .render(t, &chunks[1], |t, chunks2| {
+                .sizes(&[Size::Percent(100)])
+                .render(t, &chunks[2], |t, chunks2| {
                     Table::new(
                         ["Name", "Amount", "Source", "Destination"].into_iter(),
                         vec![
@@ -125,17 +131,11 @@ fn draw(t: &mut Terminal<RawBackend>) -> Result<(), io::Error> {
                         )
                         .block(
                         Block::default()
-                            .title("Transaction Record")
-                            .borders(Borders::ALL)
                         )
                         .header_style(Style::default().modifier(Modifier::Bold))
                         .widths(&[10, 10, 10, 10])
                         .column_spacing(1)
                         .render(t, &chunks2[0]);
-                    Block::default()
-                        .title("Balances")
-                        .borders(Borders::ALL)
-                        .render(t, &chunks2[1]);
                 });
         });
 
