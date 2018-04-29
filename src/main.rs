@@ -26,30 +26,26 @@ fn draw(t: &mut Terminal<RawBackend>) -> Result<(), io::Error> {
     Group::default()
         .direction(Direction::Vertical)
         .margin(1)
-        .sizes(&[Size::Percent(15), Size::Percent(70), Size::Percent(10)])
+        .sizes(&[Size::Percent(33), Size::Percent(67)])
         .render(t, &size, |t, chunks| {
             Block::default()
-                .title("Block 0")
+                .title("Graph")
                 .borders(Borders::ALL)
                 .render(t, &chunks[0]);
             Group::default()
                 .direction(Direction::Horizontal)
                 .margin(1)
-                .sizes(&[Size::Percent(50), Size::Percent(50)])
+                .sizes(&[Size::Percent(62), Size::Percent(38)])
                 .render(t, &chunks[1], |t, chunks2| {
                     Block::default()
-                        .title("Block 1.0")
+                        .title("Transaction Record")
                         .borders(Borders::ALL)
                         .render(t, &chunks2[0]);
                     Block::default()
-                        .title("Block 1.1")
+                        .title("Balances")
                         .borders(Borders::ALL)
                         .render(t, &chunks2[1]);
                 });
-            Block::default()
-                .title("Block 2")
-                .borders(Borders::ALL)
-                .render(t, &chunks[2]);
         });
 
     t.draw()
