@@ -122,18 +122,18 @@ fn draw(t: &mut Terminal<RawBackend>) -> Result<(), io::Error> {
                 .sizes(&[Size::Percent(100)])
                 .render(t, &chunks[2], |t, chunks2| {
                     Table::new(
-                        ["Name", "Amount", "Source", "Destination"].into_iter(),
+                        ["Name", "Amount", "Source", "(Balance)", "Dest.", "(Balance)"].into_iter(),
                         vec![
-                            Row::Data(["foo", "123.45", "bar", "baz"].into_iter()),
-                            Row::Data(["blat", " 23.99", "scram", ""].into_iter()),
-                            Row::Data(["fizz", " 15.00", "", "buzz"].into_iter()),
+                            Row::Data(["foo", "  123.45", "bar", "  100.00", "baz", "  355.02"].into_iter()),
+                            Row::Data(["blat", "   23.99", "scram", "    0.56", "", ""].into_iter()),
+                            Row::Data(["fizz", "   15.00", "", "", "buzz", "   16.98"].into_iter()),
                         ].into_iter()
                         )
                         .block(
                         Block::default()
                         )
                         .header_style(Style::default().modifier(Modifier::Bold))
-                        .widths(&[10, 10, 10, 10])
+                        .widths(&[10, 10, 10, 10, 10, 10])
                         .column_spacing(1)
                         .render(t, &chunks2[0]);
                 });
