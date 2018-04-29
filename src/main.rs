@@ -80,7 +80,7 @@ fn draw(t: &mut Terminal<RawBackend>) -> Result<(), io::Error> {
     Group::default()
         .direction(Direction::Vertical)
         .margin(1)
-        .sizes(&[Size::Percent(33), Size::Fixed(3), Size::Min(0)])
+        .sizes(&[Size::Percent(33), Size::Fixed(3), Size::Min(13)])
         .render(t, &size, |t, chunks| {
             let datapts: Vec<_> = (1..100)
                 .map(|x| x as f64)
