@@ -10,11 +10,25 @@ use tui::layout::{Direction, Group, Size};
 fn main() {
     let mut terminal = init().expect("Failed initialization.");
 
+    // get ready to run
     terminal
         .clear()
         .expect("Failed to clear the terminal window.");
 
-    draw(&mut terminal).expect("Failed to draw");
+    terminal
+        .hide_cursor()
+        .expect("Failed to hide the cursor.");
+
+    draw(&mut terminal).expect("Failed to draw.");
+
+    // clean up at the end
+    terminal
+        .show_cursor()
+        .expect("Failed to show the cursor.");
+
+    terminal
+        .clear()
+        .expect("Failed to clear the terminal window.");
 }
 
 fn init() -> Result<Terminal<RawBackend>, io::Error> {
