@@ -11,7 +11,7 @@ use termion::input::TermRead;
 
 use tui::Terminal;
 use tui::backend::RawBackend;
-use tui::widgets::{Axis, Block, Borders, Chart, Dataset, Marker, Widget, Table, Row, Tabs};
+use tui::widgets::{Axis, Block, Borders, Chart, Dataset, Marker, Row, Table, Tabs, Widget};
 use tui::layout::{Direction, Group, Size};
 use tui::style::{Color, Modifier, Style};
 
@@ -77,21 +77,38 @@ fn chk_term_size(t: &Terminal<RawBackend>) {
 fn draw(t: &mut Terminal<RawBackend>) -> Result<(), io::Error> {
     let size = t.size()?;
 
+    let datapts: Vec<_> = (1..100)
+        .map(|x| x as f64)
+        .map(|x| (x, (x * 3.14159 / 20.0).sin()))
+        .collect();
+
+    let tbl_data = vec![
+        TransactionInstance::new("foo", 123.45, "bar", 100.0, "baz", 355.02),
+        TransactionInstance::new("blat", 23.99, "scram", 0.56, "", 0.0),
+        TransactionInstance::new("fizz", 15.0, "", 0.0, "buzz", 16.98),
+    ];
+
+    //let tbl_it = tbl_data.iter().map(|row| {
+        //Row::Data(row.fmt_table().into_iter())
+    //});
+
+    let tbl_0_fmt = TransactionInstance::new("foo", 123.45, "bar", 100.0, "baz", 355.02).fmt_table();
+
+    let tbl_it = vec![
+        //Row::Data(["a", "b", "c", "d", "e", "f"].into_iter()),
+        Row::Data(tbl_0_fmt.into_iter())
+    ].into_iter();
+
     Group::default()
         .direction(Direction::Vertical)
         .margin(1)
         .sizes(&[Size::Percent(33), Size::Fixed(3), Size::Min(13)])
         .render(t, &size, |t, chunks| {
-            let datapts: Vec<_> = (1..100)
-                .map(|x| x as f64)
-                .map(|x| (x, (x * 3.14159 / 20.0).sin()))
-                .collect();
-
             Chart::default()
                 .block(
                     Block::default()
                         .title("Projected Balances")
-                        .title_style(Style::default().fg(Color::Cyan).modifier(Modifier::Bold))
+                        .title_style(Style::default().fg(Color::Cyan).modifier(Modifier::Bold)),
                 )
                 .x_axis(
                     Axis::default()
@@ -122,16 +139,16 @@ fn draw(t: &mut Terminal<RawBackend>) -> Result<(), io::Error> {
                 .sizes(&[Size::Percent(100)])
                 .render(t, &chunks[2], |t, chunks2| {
                     Table::new(
-                        ["Name", "Amount", "Source", "(Balance)", "Dest.", "(Balance)"].into_iter(),
-                        vec![
-                            Row::Data(["foo", "  123.45", "bar", "  100.00", "baz", "  355.02"].into_iter()),
-                            Row::Data(["blat", "   23.99", "scram", "    0.56", "", ""].into_iter()),
-                            Row::Data(["fizz", "   15.00", "", "", "buzz", "   16.98"].into_iter()),
-                        ].into_iter()
-                        )
-                        .block(
-                        Block::default()
-                        )
+                        [
+                            "Name",
+                            "Amount",
+                            "Source",
+                            "(Balance)",
+                            "Dest.",
+                            "(Balance)",
+                        ].into_iter(),
+                        tbl_it,
+                    ).block(Block::default())
                         .header_style(Style::default().modifier(Modifier::Bold))
                         .widths(&[10, 10, 10, 10, 10, 10])
                         .column_spacing(1)
@@ -140,4 +157,72 @@ fn draw(t: &mut Terminal<RawBackend>) -> Result<(), io::Error> {
         });
 
     t.draw()
+}
+
+struct AccountSnapshot(String, f64);
+
+struct TransactionInstance {
+    name: String,
+    date: String,
+    amount: f64,
+    source: Option<AccountSnapshot>,
+    dest: Option<AccountSnapshot>,
+}
+
+impl TransactionInstance {
+    fn new(
+        name: &str,
+        amount: f64,
+        source: &str,
+        s_balance: f64,
+        dest: &str,
+        d_balance: f64,
+    ) -> TransactionInstance {
+        let source = match source {
+            "" => None,
+            name => Some(AccountSnapshot(name.to_string(), s_balance)),
+        };
+        let dest = match dest {
+            "" => None,
+            name => Some(AccountSnapshot(name.to_string(), d_balance)),
+        };
+
+        TransactionInstance {
+            name: name.to_string(),
+            date: "".to_string(),
+            amount,
+            source,
+            dest,
+        }
+    }
+
+    fn fmt_table(&mut self) -> [String; 6] {
+    [
+        self.name.clone(),
+        format!("{:8}", self.amount),
+
+        match self.source {
+            Some(ref acct) => acct.0.clone(),
+            None => "".to_string()
+        },
+
+        if let Some(ref acct) = self.source {
+            format!("{:8}", acct.1)
+        } else {
+            "".to_string()
+        },
+
+        match self.dest {
+            Some(ref acct) => acct.0.clone(),
+            None => "".to_string()
+        },
+
+        if let Some(ref acct) = self.dest {
+            format!("{:8}", acct.1)
+        } else {
+            "".to_string()
+        }
+    ]
+
+    }
 }
