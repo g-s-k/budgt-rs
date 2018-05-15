@@ -88,16 +88,9 @@ fn draw(t: &mut Terminal<RawBackend>) -> Result<(), io::Error> {
         TransactionInstance::new("fizz", 15.0, "", 0.0, "buzz", 16.98),
     ];
 
-    //let tbl_it = tbl_data.iter().map(|row| {
-        //Row::Data(row.fmt_table().into_iter())
-    //});
-
-    let tbl_0_fmt = TransactionInstance::new("foo", 123.45, "bar", 100.0, "baz", 355.02).fmt_table();
-
-    let tbl_it = vec![
-        //Row::Data(["a", "b", "c", "d", "e", "f"].into_iter()),
-        Row::Data(tbl_0_fmt.into_iter())
-    ].into_iter();
+    let tbl_fmt = tbl_data.iter().map(|ref row| {
+        Row::Data(row.fmt_table().into_iter())
+    });
 
     Group::default()
         .direction(Direction::Vertical)
@@ -147,7 +140,7 @@ fn draw(t: &mut Terminal<RawBackend>) -> Result<(), io::Error> {
                             "Dest.",
                             "(Balance)",
                         ].into_iter(),
-                        tbl_it,
+                        tbl_fmt,
                     ).block(Block::default())
                         .header_style(Style::default().modifier(Modifier::Bold))
                         .widths(&[10, 10, 10, 10, 10, 10])
@@ -196,8 +189,8 @@ impl TransactionInstance {
         }
     }
 
-    fn fmt_table(&mut self) -> [String; 6] {
-    [
+    fn fmt_table(&self) -> Vec<String> {
+    vec![
         self.name.clone(),
         format!("{:8}", self.amount),
 
