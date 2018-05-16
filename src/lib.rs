@@ -67,7 +67,7 @@ impl Account {
 }
 
 /// A container for information about a given account at a given time.
-struct AccountSnapshot(String, i64);
+pub struct AccountSnapshot(pub String, pub i64);
 
 /// Represents one concrete instance of a transaction.
 pub struct TransactionInstance {
@@ -79,38 +79,26 @@ pub struct TransactionInstance {
 }
 
 impl TransactionInstance {
-
     /// Create a new TransactionInstance.
     ///
     /// # Examples
     /// ```
-    /// let ti = budgt::TransactionInstance::new("foo", 1000, "bar", 12345, "baz", 20231);
+    /// let ti = budgt::TransactionInstance::new("foo", 1000, Some(budgt::AccountSnapshot("bar".to_string(), 12345)), Some(budgt::AccountSnapshot("baz".to_string(), 20231)));
     /// ```
     ///
     /// ```
-    /// let ti = budgt::TransactionInstance::new("foo", 1000, "bar", 12345, "", 0);
+    /// let ti = budgt::TransactionInstance::new("foo", 1000, Some(budgt::AccountSnapshot("bar".to_string(), 12345)), None);
     /// ```
     ///
     /// ```
-    /// let ti = budgt::TransactionInstance::new("foo", 1000, "", 0, "baz", 3099);
+    /// let ti = budgt::TransactionInstance::new("foo", 1000, None, Some(budgt::AccountSnapshot("baz".to_string(), 3099)));
     /// ```
     pub fn new(
         name: &str,
         amount: i64,
-        source: &str,
-        s_balance: i64,
-        dest: &str,
-        d_balance: i64,
+        source: Option<AccountSnapshot>,
+        dest: Option<AccountSnapshot>,
     ) -> TransactionInstance {
-        let source = match source {
-            "" => None,
-            name => Some(AccountSnapshot(name.to_string(), s_balance)),
-        };
-        let dest = match dest {
-            "" => None,
-            name => Some(AccountSnapshot(name.to_string(), d_balance)),
-        };
-
         TransactionInstance {
             date: "".to_string(),
             name: name.to_string(),
@@ -122,34 +110,29 @@ impl TransactionInstance {
 
     /// Format a transaction instance as a series of strings.
     pub fn fmt_table(&self) -> Vec<String> {
-    vec![
-        self.date.clone(),
-        self.name.clone(),
-        fmt_int_cents(self.amount),
-
-        match self.source {
-            Some(ref acct) => acct.0.clone(),
-            None => "".to_string()
-        },
-
-        if let Some(ref acct) = self.source {
-            fmt_int_cents(acct.1)
-        } else {
-            "".to_string()
-        },
-
-        match self.dest {
-            Some(ref acct) => acct.0.clone(),
-            None => "".to_string()
-        },
-
-        if let Some(ref acct) = self.dest {
-            fmt_int_cents(acct.1)
-        } else {
-            "".to_string()
-        }
-    ]
-
+        vec![
+            self.date.clone(),
+            self.name.clone(),
+            fmt_int_cents(self.amount),
+            match self.source {
+                Some(ref acct) => acct.0.clone(),
+                None => "".to_string(),
+            },
+            if let Some(ref acct) = self.source {
+                fmt_int_cents(acct.1)
+            } else {
+                "".to_string()
+            },
+            match self.dest {
+                Some(ref acct) => acct.0.clone(),
+                None => "".to_string(),
+            },
+            if let Some(ref acct) = self.dest {
+                fmt_int_cents(acct.1)
+            } else {
+                "".to_string()
+            },
+        ]
     }
 }
 

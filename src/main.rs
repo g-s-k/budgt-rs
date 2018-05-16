@@ -1,6 +1,6 @@
+extern crate budgt;
 extern crate termion;
 extern crate tui;
-extern crate budgt;
 
 use std::io;
 
@@ -16,7 +16,7 @@ use tui::widgets::{Axis, Block, Borders, Chart, Dataset, Marker, Row, Table, Tab
 use tui::layout::{Direction, Group, Size};
 use tui::style::{Color, Modifier, Style};
 
-use budgt::TransactionInstance;
+use budgt::{AccountSnapshot, TransactionInstance};
 
 fn main() {
     let mut terminal = init().expect("Failed initialization.");
@@ -86,14 +86,29 @@ fn draw(t: &mut Terminal<RawBackend>) -> Result<(), io::Error> {
         .collect();
 
     let tbl_data = vec![
-        TransactionInstance::new("foo", 12345, "bar", 1000, "baz", 35502),
-        TransactionInstance::new("blat", 2399, "scram", 56, "", 0),
-        TransactionInstance::new("fizz", 1500, "", 0, "buzz", 1698),
+        TransactionInstance::new(
+            "foo",
+            12345,
+            Some(AccountSnapshot("bar".to_string(), 1000)),
+            Some(AccountSnapshot("baz".to_string(), 35502)),
+        ),
+        TransactionInstance::new(
+            "blat",
+            2399,
+            Some(AccountSnapshot("scram".to_string(), 56)),
+            None,
+        ),
+        TransactionInstance::new(
+            "fizz",
+            1500,
+            None,
+            Some(AccountSnapshot("buzz".to_string(), 1698)),
+        ),
     ];
 
-    let tbl_fmt = tbl_data.iter().map(|ref row| {
-        Row::Data(row.fmt_table().into_iter())
-    });
+    let tbl_fmt = tbl_data
+        .iter()
+        .map(|ref row| Row::Data(row.fmt_table().into_iter()));
 
     Group::default()
         .direction(Direction::Vertical)
@@ -155,4 +170,3 @@ fn draw(t: &mut Terminal<RawBackend>) -> Result<(), io::Error> {
 
     t.draw()
 }
-
