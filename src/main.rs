@@ -86,9 +86,9 @@ fn draw(t: &mut Terminal<RawBackend>) -> Result<(), io::Error> {
         .collect();
 
     let tbl_data = vec![
-        TransactionInstance::new("foo", 123.45, "bar", 100.0, "baz", 355.02),
-        TransactionInstance::new("blat", 23.99, "scram", 0.56, "", 0.0),
-        TransactionInstance::new("fizz", 15.0, "", 0.0, "buzz", 16.98),
+        TransactionInstance::new("foo", 12345, "bar", 1000, "baz", 35502),
+        TransactionInstance::new("blat", 2399, "scram", 56, "", 0),
+        TransactionInstance::new("fizz", 1500, "", 0, "buzz", 1698),
     ];
 
     let tbl_fmt = tbl_data.iter().map(|ref row| {

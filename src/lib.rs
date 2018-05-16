@@ -6,8 +6,8 @@ enum AcctType {
 /// Represents an account - holding either money or debt.
 pub struct Account {
     pub name: String,
-    balance: f64,
-    holds: f64,
+    balance: i64,
+    holds: i64,
     rate: f64,
     typ: AcctType,
 }
@@ -22,7 +22,7 @@ impl Account {
     /// ```
     /// let myacct = budgt::Account::new("cool account", 123.45, 2.0, 0.0, false);
     /// ```
-    pub fn new(name: &str, balance: f64, holds: f64, rate: f64, negative: bool) -> Account {
+    pub fn new(name: &str, balance: i64, holds: i64, rate: f64, negative: bool) -> Account {
         let typ = if negative {
             AcctType::Debit
         } else {
@@ -46,10 +46,10 @@ impl Account {
     /// let myacct = budgt::Account::new("cool account", 123.45, 5.75, 0.0, false);
     /// let real_bal = myacct.current();
     /// ```
-    pub fn current(&self) -> f64 {
+    pub fn current(&self) -> i64 {
         self.balance + self.holds * match self.typ {
-            AcctType::Credit => -1.0,
-            AcctType::Debit => 1.0,
+            AcctType::Credit => -1,
+            AcctType::Debit => 1,
         }
     }
 
@@ -61,19 +61,19 @@ impl Account {
     /// let myacct = budgt::Account::new("cool account", 100.0, 0.0, 0.02, true);
     /// let future_bal = myacct.future(3);
     /// ```
-    pub fn future(&self, n_months: u64) -> f64 {
-        self.current() * (1.0 + n_months as f64 * self.rate)
+    pub fn future(&self, n_months: u64) -> i64 {
+        (self.current() as f64 * (1.0 + n_months as f64 * self.rate)) as i64
     }
 }
 
 /// A container for information about a given account at a given time.
-struct AccountSnapshot(String, f64);
+struct AccountSnapshot(String, i64);
 
 /// Represents one concrete instance of a transaction.
 pub struct TransactionInstance {
     name: String,
     date: String,
-    amount: f64,
+    amount: i64,
     source: Option<AccountSnapshot>,
     dest: Option<AccountSnapshot>,
 }
@@ -83,11 +83,11 @@ impl TransactionInstance {
     /// Create a new TransactionInstance.
     pub fn new(
         name: &str,
-        amount: f64,
+        amount: i64,
         source: &str,
-        s_balance: f64,
+        s_balance: i64,
         dest: &str,
-        d_balance: f64,
+        d_balance: i64,
     ) -> TransactionInstance {
         let source = match source {
             "" => None,
@@ -111,7 +111,7 @@ impl TransactionInstance {
     pub fn fmt_table(&self) -> Vec<String> {
     vec![
         self.name.clone(),
-        format!("{:8}", self.amount),
+        fmt_int_cents(self.amount),
 
         match self.source {
             Some(ref acct) => acct.0.clone(),
@@ -119,7 +119,7 @@ impl TransactionInstance {
         },
 
         if let Some(ref acct) = self.source {
-            format!("{:8}", acct.1)
+            fmt_int_cents(acct.1)
         } else {
             "".to_string()
         },
@@ -130,11 +130,16 @@ impl TransactionInstance {
         },
 
         if let Some(ref acct) = self.dest {
-            format!("{:8}", acct.1)
+            fmt_int_cents(acct.1)
         } else {
             "".to_string()
         }
     ]
 
     }
+}
+
+/// Take an integer number of cents and format it as a 2-place decimal.
+fn fmt_int_cents(amt: i64) -> String {
+    format!("{:5}.{:02}", amt / 100, amt % 100)
 }
