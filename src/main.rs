@@ -136,6 +136,7 @@ fn draw(t: &mut Terminal<RawBackend>) -> Result<(), io::Error> {
                 .render(t, &chunks[2], |t, chunks2| {
                     Table::new(
                         [
+                            "Date",
                             "Name",
                             "Amount",
                             "Source",
@@ -146,7 +147,7 @@ fn draw(t: &mut Terminal<RawBackend>) -> Result<(), io::Error> {
                         tbl_fmt,
                     ).block(Block::default())
                         .header_style(Style::default().modifier(Modifier::Bold))
-                        .widths(&[10, 10, 10, 10, 10, 10])
+                        .widths(&[10, 10, 10, 10, 10, 10, 10])
                         .column_spacing(1)
                         .render(t, &chunks2[0]);
                 });

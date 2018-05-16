@@ -71,8 +71,8 @@ struct AccountSnapshot(String, i64);
 
 /// Represents one concrete instance of a transaction.
 pub struct TransactionInstance {
-    name: String,
     date: String,
+    name: String,
     amount: i64,
     source: Option<AccountSnapshot>,
     dest: Option<AccountSnapshot>,
@@ -99,8 +99,8 @@ impl TransactionInstance {
         };
 
         TransactionInstance {
-            name: name.to_string(),
             date: "".to_string(),
+            name: name.to_string(),
             amount,
             source,
             dest,
@@ -110,6 +110,7 @@ impl TransactionInstance {
     /// Format a transaction instance as a series of strings.
     pub fn fmt_table(&self) -> Vec<String> {
     vec![
+        self.date.clone(),
         self.name.clone(),
         fmt_int_cents(self.amount),
 
