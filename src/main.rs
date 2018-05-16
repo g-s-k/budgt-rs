@@ -1,5 +1,6 @@
 extern crate termion;
 extern crate tui;
+extern crate budgt;
 
 use std::io;
 
@@ -14,6 +15,8 @@ use tui::backend::RawBackend;
 use tui::widgets::{Axis, Block, Borders, Chart, Dataset, Marker, Row, Table, Tabs, Widget};
 use tui::layout::{Direction, Group, Size};
 use tui::style::{Color, Modifier, Style};
+
+use budgt::TransactionInstance;
 
 fn main() {
     let mut terminal = init().expect("Failed initialization.");
@@ -152,70 +155,3 @@ fn draw(t: &mut Terminal<RawBackend>) -> Result<(), io::Error> {
     t.draw()
 }
 
-struct AccountSnapshot(String, f64);
-
-struct TransactionInstance {
-    name: String,
-    date: String,
-    amount: f64,
-    source: Option<AccountSnapshot>,
-    dest: Option<AccountSnapshot>,
-}
-
-impl TransactionInstance {
-    fn new(
-        name: &str,
-        amount: f64,
-        source: &str,
-        s_balance: f64,
-        dest: &str,
-        d_balance: f64,
-    ) -> TransactionInstance {
-        let source = match source {
-            "" => None,
-            name => Some(AccountSnapshot(name.to_string(), s_balance)),
-        };
-        let dest = match dest {
-            "" => None,
-            name => Some(AccountSnapshot(name.to_string(), d_balance)),
-        };
-
-        TransactionInstance {
-            name: name.to_string(),
-            date: "".to_string(),
-            amount,
-            source,
-            dest,
-        }
-    }
-
-    fn fmt_table(&self) -> Vec<String> {
-    vec![
-        self.name.clone(),
-        format!("{:8}", self.amount),
-
-        match self.source {
-            Some(ref acct) => acct.0.clone(),
-            None => "".to_string()
-        },
-
-        if let Some(ref acct) = self.source {
-            format!("{:8}", acct.1)
-        } else {
-            "".to_string()
-        },
-
-        match self.dest {
-            Some(ref acct) => acct.0.clone(),
-            None => "".to_string()
-        },
-
-        if let Some(ref acct) = self.dest {
-            format!("{:8}", acct.1)
-        } else {
-            "".to_string()
-        }
-    ]
-
-    }
-}
