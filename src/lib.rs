@@ -20,7 +20,7 @@ impl Account {
     /// # Examples
     ///
     /// ```
-    /// let myacct = budgt::Account::new("cool account", 123.45, 2.0, 0.0, false);
+    /// let myacct = budgt::Account::new("cool account", 12345, 200, 0., false);
     /// ```
     pub fn new(name: &str, balance: i64, holds: i64, rate: f64, negative: bool) -> Account {
         let typ = if negative {
@@ -43,7 +43,7 @@ impl Account {
     /// # Examples
     ///
     /// ```
-    /// let myacct = budgt::Account::new("cool account", 123.45, 5.75, 0.0, false);
+    /// let myacct = budgt::Account::new("cool account", 12345, 575, 0., false);
     /// let real_bal = myacct.current();
     /// ```
     pub fn current(&self) -> i64 {
@@ -58,7 +58,7 @@ impl Account {
     /// # Examples
     ///
     /// ```
-    /// let myacct = budgt::Account::new("cool account", 100.0, 0.0, 0.02, true);
+    /// let myacct = budgt::Account::new("cool account", 10000, 0, 0.02, true);
     /// let future_bal = myacct.future(3);
     /// ```
     pub fn future(&self, n_months: u64) -> i64 {
@@ -81,6 +81,19 @@ pub struct TransactionInstance {
 impl TransactionInstance {
 
     /// Create a new TransactionInstance.
+    ///
+    /// # Examples
+    /// ```
+    /// let ti = budgt::TransactionInstance::new("foo", 1000, "bar", 12345, "baz", 20231);
+    /// ```
+    ///
+    /// ```
+    /// let ti = budgt::TransactionInstance::new("foo", 1000, "bar", 12345, "", 0);
+    /// ```
+    ///
+    /// ```
+    /// let ti = budgt::TransactionInstance::new("foo", 1000, "", 0, "baz", 3099);
+    /// ```
     pub fn new(
         name: &str,
         amount: i64,
@@ -141,6 +154,12 @@ impl TransactionInstance {
 }
 
 /// Take an integer number of cents and format it as a 2-place decimal.
-fn fmt_int_cents(amt: i64) -> String {
+///
+/// # Examples
+/// ```
+/// let formatted_amt = budgt::fmt_int_cents(12345);
+/// assert_eq!(formatted_amt, "  123.45")
+/// ```
+pub fn fmt_int_cents(amt: i64) -> String {
     format!("{:5}.{:02}", amt / 100, amt % 100)
 }
