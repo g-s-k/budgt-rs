@@ -16,7 +16,7 @@ use tui::style::{Color, Modifier, Style};
 use tui::widgets::{Axis, Block, Borders, Chart, Dataset, Marker, Row, Table, Tabs, Widget};
 use tui::Terminal;
 
-use budgt::{AccountSnapshot, Money, TransactionInstance};
+use budgt::{AccountSnapshot, TransactionInstance};
 
 fn main() {
     let mut terminal = init().expect("Failed initialization.");
@@ -89,16 +89,16 @@ fn draw(t: &mut Terminal<RawBackend>) -> Result<(), io::Error> {
         TransactionInstance::default()
             .name("foo")
             .amount(12345)
-            .source(AccountSnapshot("bar".to_string(), Money(1000)))
-            .dest(AccountSnapshot("baz".to_string(), Money(35502))),
+            .source(AccountSnapshot::new("bar", 1000))
+            .dest(AccountSnapshot::new("baz", 35502)),
         TransactionInstance::default()
             .name("blat")
             .amount(2399)
-            .source(AccountSnapshot("scram".to_string(), Money(56))),
+            .source(AccountSnapshot::new("scram", 56)),
         TransactionInstance::default()
             .name("fizz")
             .amount(1500)
-            .dest(AccountSnapshot("buzz".to_string(), Money(1698))),
+            .dest(AccountSnapshot::new("buzz", 1698)),
         TransactionInstance::default()
             .name("FreeBSD")
             .amount(1200),

@@ -71,9 +71,29 @@ impl Account {
 }
 
 /// A container for information about a given account at a given time.
-pub struct AccountSnapshot(pub String, pub Money);
+pub struct AccountSnapshot(String, Money);
+
+impl AccountSnapshot {
+    /// Create a new AccountSnapshot.
+    ///
+    /// # Examples
+    ///
+    ///     let snap = budgt::AccountSnapshot::new("abcdefg", 12345);
+    pub fn new<T>(name: &str, balance: T) -> Self where Money: From<T> {
+        AccountSnapshot(name.to_owned(), Money::from(balance))
+    }
+}
 
 /// Represents one concrete instance of a transaction.
+///
+/// # Examples
+/// ```
+/// let ti = budgt::TransactionInstance::default()
+///     .name("foo")
+///     .amount(123456)
+///     .source(budgt::AccountSnapshot::new("bar", 999))
+///     .dest(budgt::AccountSnapshot::new("baz", -27));
+/// ```
 #[derive(Default)]
 pub struct TransactionInstance {
     date: String,
@@ -88,15 +108,15 @@ impl TransactionInstance {
     ///
     /// # Examples
     /// ```
-    /// let ti = budgt::TransactionInstance::new("foo", budgt::Money(1000), Some(budgt::AccountSnapshot("bar".to_string(), budgt::Money(12345))), Some(budgt::AccountSnapshot("baz".to_string(), budgt::Money(20231))));
+    /// let ti = budgt::TransactionInstance::new("foo", budgt::Money(1000), Some(budgt::AccountSnapshot::new("bar", 12345)), Some(budgt::AccountSnapshot::new("baz", 20231)));
     /// ```
     ///
     /// ```
-    /// let ti = budgt::TransactionInstance::new("foo", budgt::Money(1000), Some(budgt::AccountSnapshot("bar".to_string(), budgt::Money(12345))), None);
+    /// let ti = budgt::TransactionInstance::new("foo", budgt::Money(1000), Some(budgt::AccountSnapshot::new("bar", 12345)), None);
     /// ```
     ///
     /// ```
-    /// let ti = budgt::TransactionInstance::new("foo", budgt::Money(1000), None, Some(budgt::AccountSnapshot("baz".to_string(), budgt::Money(3099))));
+    /// let ti = budgt::TransactionInstance::new("foo", budgt::Money(1000), None, Some(budgt::AccountSnapshot::new("baz", 3099)));
     /// ```
     pub fn new(
         name: &str,
