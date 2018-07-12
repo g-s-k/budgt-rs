@@ -1,6 +1,6 @@
 use std::{fmt, ops};
 
-#[derive(Clone, Copy, Default)]
+#[derive(Clone, Copy, Default, Debug)]
 pub struct Money(pub i64);
 
 impl ops::Deref for Money {
@@ -88,6 +88,6 @@ where
 
 impl fmt::Display for Money {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{:5}.{:02}", *self / 100, *self % 100)
+        write!(f, "{:5}.{:02}", self.0 / 100, self.0 % 100)
     }
 }

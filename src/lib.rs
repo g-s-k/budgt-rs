@@ -71,6 +71,7 @@ impl Account {
 }
 
 /// A container for information about a given account at a given time.
+#[derive(Clone, Debug)]
 pub struct AccountSnapshot(String, Money);
 
 impl AccountSnapshot {
@@ -94,7 +95,7 @@ impl AccountSnapshot {
 ///     .source(budgt::AccountSnapshot::new("bar", 999))
 ///     .dest(budgt::AccountSnapshot::new("baz", -27));
 /// ```
-#[derive(Default)]
+#[derive(Default, Clone, Debug)]
 pub struct TransactionInstance {
     date: String,
     name: String,

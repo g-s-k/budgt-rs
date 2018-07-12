@@ -105,8 +105,8 @@ fn draw(t: &mut Terminal<RawBackend>) -> Result<(), io::Error> {
     ];
 
     let tbl_fmt = tbl_data
-        .iter()
-        .map(|ref row| Row::Data(row.fmt_table().into_iter()));
+        .into_iter()
+        .map(|row| Row::Data(row.fmt_table().into_iter()));
 
     Group::default()
         .direction(Direction::Vertical)
