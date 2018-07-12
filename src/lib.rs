@@ -1,3 +1,85 @@
+use std::{fmt, ops};
+
+#[derive(Clone, Copy)]
+pub struct Money(i64);
+
+impl ops::Deref for Money {
+    type Target = i64;
+
+    fn deref(&self) -> &i64 {
+        &self.0
+    }
+}
+
+impl ops::DerefMut for Money {
+    fn deref_mut(&mut self) -> &mut i64 {
+        &mut self.0
+    }
+}
+
+impl<T> From<T> for Money where i64: From<T> {
+    fn from(val: T) -> Self {
+        Money(i64::from(val))
+    }
+}
+
+impl<T> ops::Add<T> for Money where Money: From<T> {
+    type Output = Money;
+
+    fn add(self, rhs: T) -> Money {
+        let r = Money::from(rhs);
+        Money(self.0 + r.0)
+    }
+}
+
+impl<T> ops::Sub<T> for Money
+where T: From<i64> + ops::Sub,
+      i64: From<<T as ops::Sub>::Output>
+{
+    type Output = Money;
+
+    fn sub(self, rhs: T) -> Money {
+        Money(i64::from(T::from(self.0) - rhs))
+    }
+}
+
+impl<T> ops::Mul<T> for Money where Money: From<T> {
+    type Output = Money;
+
+    fn mul(self, rhs: T) -> Money {
+        let r = Money::from(rhs);
+        Money(self.0 * r.0)
+    }
+}
+
+impl<T> ops::Div<T> for Money
+where T: From<i64> + ops::Div,
+      i64: From<<T as ops::Div>::Output>
+{
+    type Output = Money;
+
+    fn div(self, rhs: T) -> Money {
+        Money(i64::from(T::from(self.0) / rhs))
+    }
+}
+
+impl<T> ops::Rem<T> for Money
+where T: From<i64> + ops::Rem,
+      i64: From<<T as ops::Rem>::Output>
+{
+    type Output = Money;
+
+    fn rem(self, rhs: T) -> Money {
+        Money(i64::from(T::from(self.0) % rhs))
+    }
+}
+
+impl fmt::Display for Money {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{:5}.{:02}", *self / 100i64, *self % 100i64)
+    }
+}
+
 enum AcctType {
     Credit,
     Debit,
@@ -6,8 +88,8 @@ enum AcctType {
 /// Represents an account - holding either money or debt.
 pub struct Account {
     pub name: String,
-    balance: i64,
-    holds: i64,
+    balance: Money,
+    holds: Money,
     rate: f64,
     typ: AcctType,
 }
@@ -31,8 +113,8 @@ impl Account {
 
         Account {
             name: name.to_string(),
-            balance,
-            holds,
+            balance: Money(balance),
+            holds: Money(holds),
             rate,
             typ,
         }
@@ -46,7 +128,7 @@ impl Account {
     /// let myacct = budgt::Account::new("cool account", 12345, 575, 0., false);
     /// let real_bal = myacct.current();
     /// ```
-    pub fn current(&self) -> i64 {
+    pub fn current(&self) -> Money {
         self.balance + self.holds * match self.typ {
             AcctType::Credit => -1,
             AcctType::Debit => 1,
@@ -61,8 +143,8 @@ impl Account {
     /// let myacct = budgt::Account::new("cool account", 10000, 0, 0.02, true);
     /// let future_bal = myacct.future(3);
     /// ```
-    pub fn future(&self, n_months: u64) -> i64 {
-        (self.current() as f64 * (1.0 + n_months as f64 * self.rate)) as i64
+    pub fn future(&self, n_months: u64) -> Money {
+        Money((self.current().0 as f64 * (1.0 + n_months as f64 * self.rate)) as i64)
     }
 }
 
@@ -113,13 +195,13 @@ impl TransactionInstance {
         vec![
             self.date.clone(),
             self.name.clone(),
-            fmt_int_cents(self.amount),
+            self.amount.to_string(),
             match self.source {
                 Some(ref acct) => acct.0.clone(),
                 None => "".to_string(),
             },
             if let Some(ref acct) = self.source {
-                fmt_int_cents(acct.1)
+                acct.1.to_string()
             } else {
                 "".to_string()
             },
@@ -128,21 +210,10 @@ impl TransactionInstance {
                 None => "".to_string(),
             },
             if let Some(ref acct) = self.dest {
-                fmt_int_cents(acct.1)
+                acct.1.to_string()
             } else {
                 "".to_string()
             },
         ]
     }
-}
-
-/// Take an integer number of cents and format it as a 2-place decimal.
-///
-/// # Examples
-/// ```
-/// let formatted_amt = budgt::fmt_int_cents(12345);
-/// assert_eq!(formatted_amt, "  123.45")
-/// ```
-pub fn fmt_int_cents(amt: i64) -> String {
-    format!("{:5}.{:02}", amt / 100, amt % 100)
 }
