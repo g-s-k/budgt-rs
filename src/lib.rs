@@ -74,6 +74,7 @@ impl Account {
 pub struct AccountSnapshot(pub String, pub Money);
 
 /// Represents one concrete instance of a transaction.
+#[derive(Default)]
 pub struct TransactionInstance {
     date: String,
     name: String,
@@ -110,6 +111,26 @@ impl TransactionInstance {
             source,
             dest,
         }
+    }
+
+    pub fn name(mut self, name: &str) -> Self {
+        self.name = name.to_owned();
+        self
+    }
+
+    pub fn amount<T>(mut self, amt: T) -> Self where Money: From<T> {
+        self.amount = Money::from(amt);
+        self
+    }
+
+    pub fn source(mut self, acct: AccountSnapshot) -> Self {
+        self.source = Some(acct);
+        self
+    }
+
+    pub fn dest(mut self, acct: AccountSnapshot) -> Self {
+        self.dest = Some(acct);
+        self
     }
 
     /// Format a transaction instance as a series of strings.

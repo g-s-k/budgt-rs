@@ -85,25 +85,23 @@ fn draw(t: &mut Terminal<RawBackend>) -> Result<(), io::Error> {
         .map(|x| (x, (x * 3.14159 / 20.0).sin()))
         .collect();
 
-    let tbl_data = vec![
-        TransactionInstance::new(
-            "foo",
-            Money(12345),
-            Some(AccountSnapshot("bar".to_string(), Money(1000))),
-            Some(AccountSnapshot("baz".to_string(), Money(35502))),
-        ),
-        TransactionInstance::new(
-            "blat",
-            Money(2399),
-            Some(AccountSnapshot("scram".to_string(), Money(56))),
-            None,
-        ),
-        TransactionInstance::new(
-            "fizz",
-            Money(1500),
-            None,
-            Some(AccountSnapshot("buzz".to_string(), Money(1698))),
-        ),
+    let tbl_data: Vec<TransactionInstance> = vec![
+        TransactionInstance::default()
+            .name("foo")
+            .amount(12345)
+            .source(AccountSnapshot("bar".to_string(), Money(1000)))
+            .dest(AccountSnapshot("baz".to_string(), Money(35502))),
+        TransactionInstance::default()
+            .name("blat")
+            .amount(2399)
+            .source(AccountSnapshot("scram".to_string(), Money(56))),
+        TransactionInstance::default()
+            .name("fizz")
+            .amount(1500)
+            .dest(AccountSnapshot("buzz".to_string(), Money(1698))),
+        TransactionInstance::default()
+            .name("FreeBSD")
+            .amount(1200),
     ];
 
     let tbl_fmt = tbl_data
