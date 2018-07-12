@@ -77,7 +77,7 @@ pub struct AccountSnapshot(pub String, pub Money);
 pub struct TransactionInstance {
     date: String,
     name: String,
-    amount: i64,
+    amount: Money,
     source: Option<AccountSnapshot>,
     dest: Option<AccountSnapshot>,
 }
@@ -87,19 +87,19 @@ impl TransactionInstance {
     ///
     /// # Examples
     /// ```
-    /// let ti = budgt::TransactionInstance::new("foo", 1000, Some(budgt::AccountSnapshot("bar".to_string(), budgt::Money(12345))), Some(budgt::AccountSnapshot("baz".to_string(), budgt::Money(20231))));
+    /// let ti = budgt::TransactionInstance::new("foo", budgt::Money(1000), Some(budgt::AccountSnapshot("bar".to_string(), budgt::Money(12345))), Some(budgt::AccountSnapshot("baz".to_string(), budgt::Money(20231))));
     /// ```
     ///
     /// ```
-    /// let ti = budgt::TransactionInstance::new("foo", 1000, Some(budgt::AccountSnapshot("bar".to_string(), budgt::Money(12345))), None);
+    /// let ti = budgt::TransactionInstance::new("foo", budgt::Money(1000), Some(budgt::AccountSnapshot("bar".to_string(), budgt::Money(12345))), None);
     /// ```
     ///
     /// ```
-    /// let ti = budgt::TransactionInstance::new("foo", 1000, None, Some(budgt::AccountSnapshot("baz".to_string(), budgt::Money(3099))));
+    /// let ti = budgt::TransactionInstance::new("foo", budgt::Money(1000), None, Some(budgt::AccountSnapshot("baz".to_string(), budgt::Money(3099))));
     /// ```
     pub fn new(
         name: &str,
-        amount: i64,
+        amount: Money,
         source: Option<AccountSnapshot>,
         dest: Option<AccountSnapshot>,
     ) -> TransactionInstance {

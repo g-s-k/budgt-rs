@@ -88,19 +88,19 @@ fn draw(t: &mut Terminal<RawBackend>) -> Result<(), io::Error> {
     let tbl_data = vec![
         TransactionInstance::new(
             "foo",
-            12345,
+            Money(12345),
             Some(AccountSnapshot("bar".to_string(), Money(1000))),
             Some(AccountSnapshot("baz".to_string(), Money(35502))),
         ),
         TransactionInstance::new(
             "blat",
-            2399,
+            Money(2399),
             Some(AccountSnapshot("scram".to_string(), Money(56))),
             None,
         ),
         TransactionInstance::new(
             "fizz",
-            1500,
+            Money(1500),
             None,
             Some(AccountSnapshot("buzz".to_string(), Money(1698))),
         ),
