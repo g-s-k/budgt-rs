@@ -155,28 +155,28 @@ impl TransactionInstance {
 
     /// Format a transaction instance as a series of strings.
     pub fn fmt_table(&self) -> Vec<String> {
-        vec![
-            self.date.clone(),
-            self.name.clone(),
-            self.amount.to_string(),
-            match self.source {
-                Some(ref acct) => acct.0.clone(),
-                None => "".to_string(),
-            },
-            if let Some(ref acct) = self.source {
-                acct.1.to_string()
-            } else {
-                "".to_string()
-            },
-            match self.dest {
-                Some(ref acct) => acct.0.clone(),
-                None => "".to_string(),
-            },
-            if let Some(ref acct) = self.dest {
-                acct.1.to_string()
-            } else {
-                "".to_string()
-            },
-        ]
+        let mut v = Vec::with_capacity(7);
+
+        v.push(self.date.clone());
+        v.push(self.name.clone());
+        v.push(self.amount.to_string());
+
+        if let Some(ref acct) = self.source {
+            v.push(acct.0.clone());
+            v.push(acct.1.to_string())
+        } else {
+            v.push("".to_owned());
+            v.push("".to_owned());
+        };
+
+        if let Some(ref acct) = self.dest {
+            v.push(acct.0.clone());
+            v.push(acct.1.to_string())
+        } else {
+            v.push("".to_owned());
+            v.push("".to_owned());
+        };
+
+        v
     }
 }
