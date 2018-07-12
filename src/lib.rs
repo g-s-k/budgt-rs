@@ -1,7 +1,7 @@
 use std::{fmt, ops};
 
 #[derive(Clone, Copy)]
-pub struct Money(i64);
+pub struct Money(pub i64);
 
 impl ops::Deref for Money {
     type Target = i64;
@@ -17,13 +17,19 @@ impl ops::DerefMut for Money {
     }
 }
 
-impl<T> From<T> for Money where i64: From<T> {
+impl<T> From<T> for Money
+where
+    i64: From<T>,
+{
     fn from(val: T) -> Self {
         Money(i64::from(val))
     }
 }
 
-impl<T> ops::Add<T> for Money where Money: From<T> {
+impl<T> ops::Add<T> for Money
+where
+    Money: From<T>,
+{
     type Output = Money;
 
     fn add(self, rhs: T) -> Money {
@@ -33,17 +39,21 @@ impl<T> ops::Add<T> for Money where Money: From<T> {
 }
 
 impl<T> ops::Sub<T> for Money
-where T: From<i64> + ops::Sub,
-      i64: From<<T as ops::Sub>::Output>
+where
+    Money: From<T>,
 {
     type Output = Money;
 
     fn sub(self, rhs: T) -> Money {
-        Money(i64::from(T::from(self.0) - rhs))
+        let r = Money::from(rhs);
+        Money(self.0 - r.0)
     }
 }
 
-impl<T> ops::Mul<T> for Money where Money: From<T> {
+impl<T> ops::Mul<T> for Money
+where
+    Money: From<T>,
+{
     type Output = Money;
 
     fn mul(self, rhs: T) -> Money {
@@ -53,30 +63,32 @@ impl<T> ops::Mul<T> for Money where Money: From<T> {
 }
 
 impl<T> ops::Div<T> for Money
-where T: From<i64> + ops::Div,
-      i64: From<<T as ops::Div>::Output>
+where
+    Money: From<T>,
 {
     type Output = Money;
 
     fn div(self, rhs: T) -> Money {
-        Money(i64::from(T::from(self.0) / rhs))
+        let r = Money::from(rhs);
+        Money(self.0 / r.0)
     }
 }
 
 impl<T> ops::Rem<T> for Money
-where T: From<i64> + ops::Rem,
-      i64: From<<T as ops::Rem>::Output>
+where
+    Money: From<T>,
 {
     type Output = Money;
 
     fn rem(self, rhs: T) -> Money {
-        Money(i64::from(T::from(self.0) % rhs))
+        let r = Money::from(rhs);
+        Money(self.0 % r.0)
     }
 }
 
 impl fmt::Display for Money {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{:5}.{:02}", *self / 100i64, *self % 100i64)
+        write!(f, "{:5}.{:02}", *self / 100, *self % 100)
     }
 }
 
@@ -102,9 +114,9 @@ impl Account {
     /// # Examples
     ///
     /// ```
-    /// let myacct = budgt::Account::new("cool account", 12345, 200, 0., false);
+    /// let myacct = budgt::Account::new("cool account", budgt::Money(12345), budgt::Money(200), 0., false);
     /// ```
-    pub fn new(name: &str, balance: i64, holds: i64, rate: f64, negative: bool) -> Account {
+    pub fn new(name: &str, balance: Money, holds: Money, rate: f64, negative: bool) -> Account {
         let typ = if negative {
             AcctType::Debit
         } else {
@@ -113,8 +125,8 @@ impl Account {
 
         Account {
             name: name.to_string(),
-            balance: Money(balance),
-            holds: Money(holds),
+            balance,
+            holds,
             rate,
             typ,
         }
@@ -125,7 +137,7 @@ impl Account {
     /// # Examples
     ///
     /// ```
-    /// let myacct = budgt::Account::new("cool account", 12345, 575, 0., false);
+    /// let myacct = budgt::Account::new("cool account", budgt::Money(12345), budgt::Money(575), 0., false);
     /// let real_bal = myacct.current();
     /// ```
     pub fn current(&self) -> Money {
@@ -140,7 +152,7 @@ impl Account {
     /// # Examples
     ///
     /// ```
-    /// let myacct = budgt::Account::new("cool account", 10000, 0, 0.02, true);
+    /// let myacct = budgt::Account::new("cool account", budgt::Money(10000), budgt::Money(0), 0.02, true);
     /// let future_bal = myacct.future(3);
     /// ```
     pub fn future(&self, n_months: u64) -> Money {
@@ -149,7 +161,7 @@ impl Account {
 }
 
 /// A container for information about a given account at a given time.
-pub struct AccountSnapshot(pub String, pub i64);
+pub struct AccountSnapshot(pub String, pub Money);
 
 /// Represents one concrete instance of a transaction.
 pub struct TransactionInstance {
@@ -165,15 +177,15 @@ impl TransactionInstance {
     ///
     /// # Examples
     /// ```
-    /// let ti = budgt::TransactionInstance::new("foo", 1000, Some(budgt::AccountSnapshot("bar".to_string(), 12345)), Some(budgt::AccountSnapshot("baz".to_string(), 20231)));
+    /// let ti = budgt::TransactionInstance::new("foo", 1000, Some(budgt::AccountSnapshot("bar".to_string(), budgt::Money(12345))), Some(budgt::AccountSnapshot("baz".to_string(), budgt::Money(20231))));
     /// ```
     ///
     /// ```
-    /// let ti = budgt::TransactionInstance::new("foo", 1000, Some(budgt::AccountSnapshot("bar".to_string(), 12345)), None);
+    /// let ti = budgt::TransactionInstance::new("foo", 1000, Some(budgt::AccountSnapshot("bar".to_string(), budgt::Money(12345))), None);
     /// ```
     ///
     /// ```
-    /// let ti = budgt::TransactionInstance::new("foo", 1000, None, Some(budgt::AccountSnapshot("baz".to_string(), 3099)));
+    /// let ti = budgt::TransactionInstance::new("foo", 1000, None, Some(budgt::AccountSnapshot("baz".to_string(), budgt::Money(3099))));
     /// ```
     pub fn new(
         name: &str,

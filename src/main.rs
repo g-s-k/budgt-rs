@@ -4,19 +4,19 @@ extern crate tui;
 
 use std::io;
 
-use std::thread;
 use std::sync::mpsc;
+use std::thread;
 
 use termion::event;
 use termion::input::TermRead;
 
-use tui::Terminal;
 use tui::backend::RawBackend;
-use tui::widgets::{Axis, Block, Borders, Chart, Dataset, Marker, Row, Table, Tabs, Widget};
 use tui::layout::{Direction, Group, Size};
 use tui::style::{Color, Modifier, Style};
+use tui::widgets::{Axis, Block, Borders, Chart, Dataset, Marker, Row, Table, Tabs, Widget};
+use tui::Terminal;
 
-use budgt::{AccountSnapshot, TransactionInstance};
+use budgt::{AccountSnapshot, Money, TransactionInstance};
 
 fn main() {
     let mut terminal = init().expect("Failed initialization.");
@@ -89,20 +89,20 @@ fn draw(t: &mut Terminal<RawBackend>) -> Result<(), io::Error> {
         TransactionInstance::new(
             "foo",
             12345,
-            Some(AccountSnapshot("bar".to_string(), 1000)),
-            Some(AccountSnapshot("baz".to_string(), 35502)),
+            Some(AccountSnapshot("bar".to_string(), Money(1000))),
+            Some(AccountSnapshot("baz".to_string(), Money(35502))),
         ),
         TransactionInstance::new(
             "blat",
             2399,
-            Some(AccountSnapshot("scram".to_string(), 56)),
+            Some(AccountSnapshot("scram".to_string(), Money(56))),
             None,
         ),
         TransactionInstance::new(
             "fizz",
             1500,
             None,
-            Some(AccountSnapshot("buzz".to_string(), 1698)),
+            Some(AccountSnapshot("buzz".to_string(), Money(1698))),
         ),
     ];
 
@@ -131,12 +131,10 @@ fn draw(t: &mut Terminal<RawBackend>) -> Result<(), io::Error> {
                         .bounds([-2.0, 2.0])
                         .labels(&["-2", "0", "2"]),
                 )
-                .datasets(&[
-                    Dataset::default()
-                        .data(datapts.as_ref())
-                        .marker(Marker::Braille)
-                        .style(Style::default().fg(Color::Yellow)),
-                ])
+                .datasets(&[Dataset::default()
+                    .data(datapts.as_ref())
+                    .marker(Marker::Braille)
+                    .style(Style::default().fg(Color::Yellow))])
                 .render(t, &chunks[0]);
             Tabs::default()
                 .block(Block::default().borders(Borders::ALL))
