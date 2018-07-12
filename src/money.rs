@@ -1,6 +1,6 @@
 use std::{fmt, ops};
 
-#[derive(Clone, Copy, Default, Debug)]
+#[derive(Clone, Copy, Default, Debug, PartialEq, Eq)]
 pub struct Money(pub i64);
 
 impl ops::Deref for Money {

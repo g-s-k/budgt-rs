@@ -68,10 +68,21 @@ impl Account {
     pub fn future(&self, n_months: u64) -> Money {
         Money((self.current().0 as f64 * (1.0 + n_months as f64 * self.rate)) as i64)
     }
+
+    /// Take a snapshot of an account's value.
+    ///
+    /// # Examples
+    /// ```
+    /// let acct = budgt::Account::new("name", budgt::Money(10), budgt::Money(5), 0.0, false);
+    /// assert_eq!(acct.take_snapshot(), budgt::AccountSnapshot::new("name", 5));
+    /// ```
+    pub fn take_snapshot(&self) -> AccountSnapshot {
+        AccountSnapshot::new(&self.name, self.current())
+    }
 }
 
 /// A container for information about a given account at a given time.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct AccountSnapshot(String, Money);
 
 impl AccountSnapshot {
