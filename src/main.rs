@@ -99,9 +99,7 @@ fn draw(t: &mut Terminal<RawBackend>) -> Result<(), io::Error> {
             .name("fizz")
             .amount(1500)
             .dest(AccountSnapshot::new("buzz", 1698)),
-        TransactionInstance::default()
-            .name("FreeBSD")
-            .amount(1200),
+        TransactionInstance::default().name("FreeBSD").amount(1200),
     ];
 
     let tbl_fmt = tbl_data
@@ -154,13 +152,15 @@ fn draw(t: &mut Terminal<RawBackend>) -> Result<(), io::Error> {
                             "(Balance)",
                             "Dest.",
                             "(Balance)",
-                        ].into_iter(),
+                        ]
+                        .into_iter(),
                         tbl_fmt,
-                    ).block(Block::default())
-                        .header_style(Style::default().modifier(Modifier::Bold))
-                        .widths(&[10, 10, 10, 10, 10, 10, 10])
-                        .column_spacing(1)
-                        .render(t, &chunks2[0]);
+                    )
+                    .block(Block::default())
+                    .header_style(Style::default().modifier(Modifier::Bold))
+                    .widths(&[10, 10, 10, 10, 10, 10, 10])
+                    .column_spacing(1)
+                    .render(t, &chunks2[0]);
                 });
         });
 
